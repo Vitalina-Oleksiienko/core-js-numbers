@@ -507,7 +507,7 @@ function numberToStringInBase(number, base) {
   }
 
   return digits.reverse().join('');
-
+}
 /**
  * Returns a string representation of a number in exponential notation.
  *
@@ -640,22 +640,22 @@ function getFloatOnString(str) {
  * '1.234', 2           => 1
  * '10', 8              => 8
  */
-function getIntegerOnString(str, base) {
-  if (base < 2 || base > 36) {
-    throw new Error('Invalid base: must be between 2 and 36');
+  function getIntegerOnString(str, base) {
+    if (base < 2 || base > 36) {
+      throw new Error('Invalid base: must be between 2 and 36');
+    }
+
+    const trimmedStr = str.trim().toLowerCase();
+
+    const isValid = trimmedStr.replace(/[0-9a-z]+/gi, '') === '';
+
+    if (!isValid) {
+      return NaN;
+    }
+
+    const parsedInt = parseInt(trimmedStr, base);
+    return Number.isInteger(parsedInt) ? parsedInt : NaN;
   }
-
-  const trimmedStr = str.trim().toLowerCase();
-
-  const isValid = trimmedStr.replace(/[0-9a-z]+/gi, '') === '';
-
-  if (!isValid) {
-    return NaN;
-  }
-
-  const parsedInt = parseInt(trimmedStr, base);
-  return Number.isInteger(parsedInt) ? parsedInt : NaN;
-
 /**
  * Returns whether a number is a safe integer.
  *
