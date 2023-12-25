@@ -226,7 +226,7 @@ function parseNumberFromString(value) {
   }
 
   const parsedNumber = parseFloat(trimmedValue);
-  if (isNaN(parsedNumber)) {
+  if (Number.isNaN(parsedNumber)) {
     throw new Error(`Invalid number format: ${value}`);
   }
 
@@ -246,14 +246,14 @@ function parseNumberFromString(value) {
  *   3,3,3   => 5.196152422706632
  *   1,2,3   => 3.741657386773941
  */
-function parseNumberFromString(value) {
+function getParallelepipedDiagonal(value) {
   if (typeof value !== 'string') {
     throw new Error('Input value must be a string');
   }
 
   const parsedNumber = Number(value);
 
-  if (isNaN(parsedNumber)) {
+  if (Number.isNaN(parsedNumber)) {
     throw new Error('Input string cannot be parsed as a number');
   }
 
@@ -282,7 +282,7 @@ function roundToPowerOfTen(num, pow) {
     throw new Error('Both inputs must be numbers');
   }
 
-  const multiplier = Math.pow(10, pow);
+  const multiplier = 10 ** pow;
   const roundedNum = Math.round(num / multiplier) * multiplier;
   return roundedNum;
 }
@@ -403,7 +403,7 @@ function getFibonacciNumber(/* index */) {
  *   10 => 55 // (1+2+3+...+10)
  *   1  => 1
  */
-function getFibonacciNumber(index) {
+function getSumToN(index) {
   if (typeof index !== 'number' || index < 0) {
     throw new Error('Index must be a non-negative integer');
   }
@@ -420,7 +420,7 @@ function getFibonacciNumber(index) {
   let current = 1;
   let nextNumber;
 
-  for (let i = 2; i <= index; i++) {
+  for (let i = 2; i <= index; i += 1) {
     nextNumber = previous + current;
     previous = current;
     current = nextNumber;
@@ -473,7 +473,7 @@ function isPowerOfTwo(num) {
     return false;
   }
 
-  return (num & (num - 1)) === 0;
+  return num % 2 === 0 && num % (num + 1) === 1;
 }
 
 /**
@@ -503,19 +503,24 @@ function getSine(num) {
  */
 function numberToStringInBase(number, base) {
   if (typeof number !== 'number' || number < 0 || base < 2 || base > 36) {
-    throw new Error('Invalid input: number must be a non-negative integer and base must be between 2 and 36');
+    throw new Error(
+      'Invalid input: number must be a non-negative integer and base must be between 2 and 36'
+    );
   }
 
   if (number === 0) {
     return '0';
   }
 
-  let digits = [];
+  const digits = [];
   let currentNumber = number;
 
   while (currentNumber > 0) {
     const remainder = currentNumber % base;
-    const digit = remainder >= 10 ? String.fromCharCode(remainder + 55) : remainder.toString();
+    const digit =
+      remainder >= 10
+        ? String.fromCharCode(remainder + 55)
+        : remainder.toString();
     digits.push(digit);
     currentNumber = Math.floor(currentNumber / base);
   }
@@ -565,16 +570,20 @@ function toFixed(number, fractionDigits) {
  */
 function toPrecision(number, precision) {
   if (typeof number !== 'number' || precision < 1 || precision > 21) {
-    throw new Error('Invalid input: number must be a number and precision must be between 1 and 21');
+    throw new Error(
+      'Invalid input: number must be a number and precision must be between 1 and 21'
+    );
   }
 
-  const adjustedPrecision = Math.max(0, precision - Math.floor(Math.log10(Math.abs(number))));
+  const adjustedPrecision = Math.max(
+    0,
+    precision - Math.floor(Math.log10(Math.abs(number)))
+  );
 
   if (adjustedPrecision >= 10) {
     return number.toFixed(adjustedPrecision - 1);
-  } else {
-    return number.toExponential(adjustedPrecision);
   }
+  return number.toExponential(adjustedPrecision);
 }
 
 /**
@@ -607,7 +616,12 @@ function getNumberValue(number) {
  * '5'      => false
  */
 function isNumber(number) {
-  return typeof number === 'number' && !isNaN(number) && number !== Infinity && number !== -Infinity;
+  return (
+    typeof number === 'number' &&
+    !Number.isNaN(number) &&
+    number !== Infinity &&
+    number !== -Infinity
+  );
 }
 
 /**
@@ -637,7 +651,7 @@ function isInteger(number) {
  */
 function getFloatOnString(str) {
   const parsedFloat = parseFloat(str);
-  return isNaN(parsedFloat) ? NaN : parsedFloat;
+  return Number.isNaN(parsedFloat) ? NaN : parsedFloat;
 }
 
 /**
@@ -654,22 +668,22 @@ function getFloatOnString(str) {
  * '1.234', 2           => 1
  * '10', 8              => 8
  */
-  function getIntegerOnString(str, base) {
-    if (base < 2 || base > 36) {
-      throw new Error('Invalid base: must be between 2 and 36');
-    }
-
-    const trimmedStr = str.trim().toLowerCase();
-
-    const isValid = trimmedStr.replace(/[0-9a-z]+/gi, '') === '';
-
-    if (!isValid) {
-      return NaN;
-    }
-
-    const parsedInt = parseInt(trimmedStr, base);
-    return Number.isInteger(parsedInt) ? parsedInt : NaN;
+function getIntegerOnString(str, base) {
+  if (base < 2 || base > 36) {
+    throw new Error('Invalid base: must be between 2 and 36');
   }
+
+  const trimmedStr = str.trim().toLowerCase();
+
+  const isValid = trimmedStr.replace(/[0-9a-z]+/gi, '') === '';
+
+  if (!isValid) {
+    return NaN;
+  }
+
+  const parsedInt = parseInt(trimmedStr, base);
+  return Number.isInteger(parsedInt) ? parsedInt : NaN;
+}
 /**
  * Returns whether a number is a safe integer.
  *
@@ -682,7 +696,9 @@ function getFloatOnString(str) {
  * 2 ** 53  => false
  */
 function isSafeInteger(number) {
-  return Number.isInteger(number) && Math.abs(number) <= Number.MAX_SAFE_INTEGER;
+  return (
+    Number.isInteger(number) && Math.abs(number) <= Number.MAX_SAFE_INTEGER
+  );
 }
 
 /**
