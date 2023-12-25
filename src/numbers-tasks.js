@@ -67,13 +67,7 @@ function getCircleCircumference(radius) {
  *  -3, 3  => 0
  */
 function getAverage(value1, value2) {
-  if (typeof value1 !== 'number' || typeof value2 !== 'number') {
-    throw new Error('Both values must be numbers');
-  }
-
-  const sum = value1 + value2;
-  const average = sum / 2;
-  return average;
+  return value1 / 2 + value2 / 2;
 }
 
 /**
@@ -246,18 +240,8 @@ function parseNumberFromString(value) {
  *   3,3,3   => 5.196152422706632
  *   1,2,3   => 3.741657386773941
  */
-function getParallelepipedDiagonal(value) {
-  if (typeof value !== 'string') {
-    throw new Error('Input value must be a string');
-  }
-
-  const parsedNumber = Number(value);
-
-  if (Number.isNaN(parsedNumber)) {
-    throw new Error('Input string cannot be parsed as a number');
-  }
-
-  return parsedNumber;
+function getParallelepipedDiagonal(a, b, c) {
+  return Math.sqrt(a ** 2 + b ** 2 + c ** 2);
 }
 
 /**
@@ -408,25 +392,12 @@ function getSumToN(index) {
     throw new Error('Index must be a non-negative integer');
   }
 
-  if (index === 0) {
-    return 0;
+  let sum = 0;
+  for (let i = 1; i <= index; i += 1) {
+    sum += i;
   }
 
-  if (index === 1) {
-    return 1;
-  }
-
-  let previous = 0;
-  let current = 1;
-  let nextNumber;
-
-  for (let i = 2; i <= index; i += 1) {
-    nextNumber = previous + current;
-    previous = current;
-    current = nextNumber;
-  }
-
-  return current;
+  return sum;
 }
 
 /**
@@ -519,7 +490,7 @@ function numberToStringInBase(number, base) {
     const remainder = currentNumber % base;
     const digit =
       remainder >= 10
-        ? String.fromCharCode(remainder + 55)
+        ? String.fromCharCode(remainder + 87).toLowerCase()
         : remainder.toString();
     digits.push(digit);
     currentNumber = Math.floor(currentNumber / base);
