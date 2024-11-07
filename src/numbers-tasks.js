@@ -662,7 +662,7 @@ function isInteger(number) {
  * 'abcdefgh'      => NaN
  */
 function getFloatOnString(str) {
-  const parsedFloat = parseFloat(str);
+  const parsedFloat = Number.parseFloat(str);
   return Number.isNaN(parsedFloat) ? NaN : parsedFloat;
 }
 
@@ -685,8 +685,7 @@ function getIntegerOnString(str, base) {
     throw new Error('Invalid base: must be between 2 and 36');
   }
 
-  const integerPart = str.split('.')[0];
-  const parsedInt = Number.parseInt(integerPart, base);
+  const parsedInt = Number.parseInt(str, base);
 
   return Number.isNaN(parsedInt) ? NaN : parsedInt;
 }
