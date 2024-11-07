@@ -352,13 +352,21 @@ function toNumber(value, def = 0) {
  *   -2 => -8
  *   0  => 0
  */
+// function getCube(num) {
+//   if (typeof num !== 'number') {
+//     throw new Error('Input must be a number');
+//   }
+
+//   return num * num * num;
+// }
 function getCube(num) {
   if (typeof num !== 'number') {
     throw new Error('Input must be a number');
   }
 
-  return num * num * num;
+  return num ** 3;
 }
+
 /**
  * Returns the Fibonacci number located at the index position.
  *
@@ -372,8 +380,25 @@ function getCube(num) {
  *   3  => 2
  *   10 => 55
  */
-function getFibonacciNumber(/* index */) {
-  throw new Error('Not implemented');
+function getFibonacciNumber(index) {
+  if (index < 0) {
+    throw new Error('Index must be a non-negative integer');
+  }
+
+  if (index === 0) return 0;
+  if (index === 1) return 1;
+
+  let a = 0;
+  let b = 1;
+  let result = 0;
+
+  for (let i = 2; i <= index; i += 1) {
+    result = a + b;
+    a = b;
+    b = result;
+  }
+
+  return result;
 }
 
 /**
@@ -439,12 +464,28 @@ function getSumOfDigits(num) {
  *   16  => true
  *   15  => false
  */
+// function isPowerOfTwo(num) {
+//   if (typeof num !== 'number' || num <= 0) {
+//     return false;
+//   }
+
+//   return num % 2 === 0 && num % (num + 1) === 1;
+// }
 function isPowerOfTwo(num) {
   if (typeof num !== 'number' || num <= 0) {
     return false;
   }
 
-  return num % 2 === 0 && num % (num + 1) === 1;
+  let currentNum = num;
+
+  while (currentNum > 1) {
+    if (currentNum % 2 !== 0) {
+      return false;
+    }
+    currentNum /= 2;
+  }
+
+  return true;
 }
 
 /**
@@ -473,31 +514,25 @@ function getSine(num) {
  * 2, 2    => '10'
  */
 function numberToStringInBase(number, base) {
-  if (typeof number !== 'number' || number < 0 || base < 2 || base > 36) {
+  if (
+    typeof number !== 'number' ||
+    !Number.isInteger(number) ||
+    base < 2 ||
+    base > 36
+  ) {
     throw new Error(
-      'Invalid input: number must be a non-negative integer and base must be between 2 and 36'
+      'Invalid input: number must be an integer, and base must be between 2 and 36'
     );
   }
 
-  if (number === 0) {
-    return '0';
-  }
+  const isNegative = number < 0;
+  const absNumber = Math.abs(number);
 
-  const digits = [];
-  let currentNumber = number;
+  const result = absNumber.toString(base);
 
-  while (currentNumber > 0) {
-    const remainder = currentNumber % base;
-    const digit =
-      remainder >= 10
-        ? String.fromCharCode(remainder + 87).toLowerCase()
-        : remainder.toString();
-    digits.push(digit);
-    currentNumber = Math.floor(currentNumber / base);
-  }
-
-  return digits.reverse().join('');
+  return isNegative ? `-${result}` : result;
 }
+
 /**
  * Returns a string representation of a number in exponential notation.
  *
@@ -539,22 +574,25 @@ function toFixed(number, fractionDigits) {
  * 12345, 7    => '12345.00'
  * 12.345, 4   => '12.35'
  */
+// function toPrecision(number, precision) {
+//   if (typeof number !== 'number' || precision < 1 || precision > 21) {
+//     throw new Error(
+//       'Invalid input: number must be a number and precision must be between 1 and 21'
+//     );
+//   }
+
+//   const adjustedPrecision = Math.max(
+//     0,
+//     precision - Math.floor(Math.log10(Math.abs(number)))
+//   );
+
+//   if (adjustedPrecision >= 10) {
+//     return number.toFixed(adjustedPrecision - 1);
+//   }
+//   return number.toExponential(adjustedPrecision);
+// }
 function toPrecision(number, precision) {
-  if (typeof number !== 'number' || precision < 1 || precision > 21) {
-    throw new Error(
-      'Invalid input: number must be a number and precision must be between 1 and 21'
-    );
-  }
-
-  const adjustedPrecision = Math.max(
-    0,
-    precision - Math.floor(Math.log10(Math.abs(number)))
-  );
-
-  if (adjustedPrecision >= 10) {
-    return number.toFixed(adjustedPrecision - 1);
-  }
-  return number.toExponential(adjustedPrecision);
+  return Number(number).toPrecision(precision);
 }
 
 /**
@@ -586,13 +624,16 @@ function getNumberValue(number) {
  * 5        => true
  * '5'      => false
  */
+// function isNumber(number) {
+//   return (
+//     typeof number === 'number' &&
+//     !Number.isNaN(number) &&
+//     number !== Infinity &&
+//     number !== -Infinity
+//   );
+// }
 function isNumber(number) {
-  return (
-    typeof number === 'number' &&
-    !Number.isNaN(number) &&
-    number !== Infinity &&
-    number !== -Infinity
-  );
+  return Number.isFinite(number);
 }
 
 /**
@@ -644,17 +685,12 @@ function getIntegerOnString(str, base) {
     throw new Error('Invalid base: must be between 2 and 36');
   }
 
-  const trimmedStr = str.trim().toLowerCase();
+  const integerPart = str.split('.')[0];
+  const parsedInt = Number.parseInt(integerPart, base);
 
-  const isValid = trimmedStr.replace(/[0-9a-z]+/gi, '') === '';
-
-  if (!isValid) {
-    return NaN;
-  }
-
-  const parsedInt = parseInt(trimmedStr, base);
-  return Number.isInteger(parsedInt) ? parsedInt : NaN;
+  return Number.isNaN(parsedInt) ? NaN : parsedInt;
 }
+
 /**
  * Returns whether a number is a safe integer.
  *
@@ -667,9 +703,7 @@ function getIntegerOnString(str, base) {
  * 2 ** 53  => false
  */
 function isSafeInteger(number) {
-  return (
-    Number.isInteger(number) && Math.abs(number) <= Number.MAX_SAFE_INTEGER
-  );
+  return Number.isSafeInteger(number);
 }
 
 /**
@@ -742,7 +776,7 @@ function getIntegerPartNumber(number) {
  * 0.1, 0.2, 0.3 => 0.6
  */
 function getSumOfNumbers(x1, x2, x3) {
-  return x1 + x2 + x3;
+  return parseFloat((x1 + x2 + x3).toFixed(10));
 }
 
 /**
@@ -793,8 +827,7 @@ function getRandomInteger(min, max) {
  * 3, 4 => 5
  */
 function getHypotenuse(a, b) {
-  const squaredHypotenuse = a * a + b * b;
-  return Math.sqrt(squaredHypotenuse);
+  return Math.hypot(a, b);
 }
 
 /**
@@ -811,11 +844,8 @@ function getHypotenuse(a, b) {
  * 15 => 8
  */
 function getCountOfOddNumbers(number) {
-  if (number < 0) {
-    return 0;
-  }
-
-  return Math.floor((number + 1) / 2);
+  const absNumber = Math.abs(number);
+  return Math.floor((absNumber + 1) / 2);
 }
 
 module.exports = {
